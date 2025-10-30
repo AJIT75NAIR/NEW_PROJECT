@@ -1,0 +1,16 @@
+--DELETE ALL CUSTOMERS WITH AN ID GREATER THAN 5
+
+SELECT *
+FROM customers
+WHERE id > 5
+
+DELETE FROM customers
+WHERE id > 5
+
+SELECT *
+FROM customers
+
+SELECT * 
+FROM persons
+
+TRUNCATE TABLE persons

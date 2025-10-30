@@ -1,0 +1,96 @@
+--FIND THE LOWEST AND HIGHEST SALES FOR EACH PRODUCT
+
+USE SalesDB
+
+SELECT
+    OrderID,
+    ProductID,
+    Sales,
+    FIRST_VALUE(Sales) OVER(PARTITION BY ProductID ORDER BY Sales) AS LowestSales,
+    LAST_VALUE(Sales) OVER(PARTITION BY ProductID ORDER BY Sales ROWS BETWEEN
+    CURRENT ROW AND UNBOUNDED FOLLOWING) AS HighestSales,  
+    FIRST_VALUE(Sales) OVER(PARTITION BY ProductID ORDER BY Sales DESC) AS 
+    HighestSales2,
+    MIN(Sales) OVER(PARTITION BY ProductID) AS LowestSales2,
+    MAX(Sales) OVER(PARTITION BY ProductID) AS HighestSales3
+FROM Sales.Orders
+
+--FIND THE DIFFERENCE IN SALES BETWEEN THE CURRENT AND THE LOWEST SALES
+
+    SELECT
+    OrderID,
+    ProductID,
+    Sales,
+    FIRST_VALUE(Sales) OVER(PARTITION BY ProductID ORDER BY Sales) AS LowestSales,
+    Sales - (MIN(Sales) OVER(PARTITION BY ProductID)) AS SalesDiff,
+    LAST_VALUE(Sales) OVER(PARTITION BY ProductID ORDER BY Sales ROWS BETWEEN
+    CURRENT ROW AND UNBOUNDED FOLLOWING) AS HighestSales,  
+    FIRST_VALUE(Sales) OVER(PARTITION BY ProductID ORDER BY Sales DESC) AS 
+    HighestSales2,
+    MIN(Sales) OVER(PARTITION BY ProductID) AS LowestSales2,
+    MAX(Sales) OVER(PARTITION BY ProductID) AS HighestSales3
+FROM Sales.Orders
+
+USE SalesDB
+
+SELECT
+DISTINCT TABLE_NAME
+FROM INFORMATION_SCHEMA.COLUMNS
+
+SELECT
+AVG(Sales) AS AVG_SALES
+FROM Sales.Orders
+
+SELECT
+CustomerID
+FROM Sales.Orders
+
+SELECT
+OrderID,
+OrderDate
+FROM Sales.Orders
+
+--FIND THE PRODUCTS THAT HAVE A PRICE HIGHER THAN THE AVERAGE PRICE OF ALL 
+--PRODUCTS
+
+--MAIN QUERY
+SELECT
+*
+FROM
+--SUB-QUERY 
+    (SELECT
+    ProductID,
+    Price,
+    AVG(Price) OVER() AS AVG_PRICE
+    FROM Sales.Products
+    )t  
+WHERE Price > AVG_PRICE
+
+--RANK CUSTOMERS BASED ON THEIR TOTAL AMOUNT OF SALES
+
+/*MAIN QUERY*/
+SELECT
+*,
+RANK() OVER(ORDER BY Total_Sales DESC) AS RANK_CUSTID
+FROM
+--SUB-QUERY
+    (
+    SELECT
+    CustomerID,
+    SUM(Sales) AS Total_Sales 
+    FROM Sales.Orders
+    GROUP BY CustomerID
+    )t 
+
+--SHOW THE PRODUCT IDS, NAMES, PRICES AND TOTAL NUMBER OF ORDERS
+
+--MAIN QUERY
+SELECT
+ProductID,
+Product,
+Price,
+--SUB-QUERY
+    (SELECT 
+    COUNT(OrderId) FROM Sales.Orders) AS Order_Count
+--  
+FROM Sales.Products

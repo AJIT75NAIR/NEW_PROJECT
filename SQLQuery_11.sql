@@ -1,0 +1,9 @@
+--RETURN UNIQUE LIST OF COUNTRIES
+
+SELECT 
+country 
+FROM customers
+
+SELECT 
+DISTINCT country 
+FROM customers

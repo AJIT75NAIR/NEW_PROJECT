@@ -1,0 +1,14 @@
+--GET THE TWO MOST RECENT ORDERS
+
+SELECT *
+FROM orders
+
+SELECT TOP 2 *
+FROM orders
+ORDER BY order_date DESC
+
+SELECT *
+FROM customers
+
+SELECT *
+FROM orders

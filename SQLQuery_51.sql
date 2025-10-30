@@ -1,0 +1,121 @@
+USE SalesDB
+/*
+SELECT
+    DATENAME(Month, OrderDate) AS OrderMonth,
+    COUNT(OrderID) AS TotalOrders
+INTO Sales.MonthlyOrders1 
+FROM Sales.Orders
+GROUP BY DATENAME(Month, OrderDate)
+
+SELECT * FROM Sales.MonthlyOrders
+
+SELECT * FROM Sales.MonthlyOrders1
+
+DROP TABLE Sales.MonthlyOrders;
+
+DROP TABLE Sales.MonthlyOrders1;
+
+IF OBJECT_ID('Sales.MonthlyOrders', 'U') IS NOT NULL
+DROP TABLE Sales.MonthlyOrders;
+GO 
+SELECT
+    DATENAME(Month, OrderDate) AS OrderMonth,
+    COUNT(OrderID) AS TotalOrders
+INTO Sales.MonthlyOrders
+FROM Sales.Orders
+GROUP BY DATENAME(Month, OrderDate) 
+*/
+
+SELECT
+*
+FROM Sales.Orders
+
+SELECT
+*
+INTO #Orders
+FROM Sales.Orders 
+
+SELECT * FROM #Orders
+
+DELETE FROM #Orders 
+WHERE OrderStatus = 'Delivered'
+
+SELECT
+*
+FROM #Orders
+
+SELECT
+*
+INTO Sales.OrdersTest
+FROM Sales.Orders
+
+--STEP 1: WRITE A QUERY
+--FOR US CUSTOMERS FIND THE TOTAL NUMBER OF CUSTOMERS AND THE AVERAGE SCORE
+
+SELECT
+    COUNT(*) AS TotalCustomers,
+    AVG(Score) AS AVG_SCORE
+FROM Sales.Customers
+WHERE Country = 'USA'
+
+--STEP 2: TURNING THE QUERY INTO A STORED PROCEDURE
+
+CREATE PROCEDURE USCUSTOMER_SUMMARY AS
+BEGIN
+SELECT
+    COUNT(*) AS TotalCustomers,
+    AVG(Score) AS AVG_SCORE
+FROM Sales.Customers
+WHERE Country = 'USA'
+END 
+
+--STE 3: EXECUTE THE STORED PROCEDURE
+
+EXEC USCUSTOMER_SUMMARY
+
+--FOR GERMAN CUSTOMERS FIND THE TOTAL NUMBER OF CUSTOMERS AND THE AVERAGE SCORE
+
+SELECT
+    COUNT(*) AS TotalCustomers,
+    AVG(Score) AS AVG_SCORE
+FROM Sales.Customers
+WHERE Country = 'Germany'
+
+CREATE PROCEDURE GERMANCUSTOMER_SUMMARY AS 
+BEGIN
+SELECT
+    COUNT(*) AS TotalCustomers,
+    AVG(Score) AS AVG_SCORE
+FROM Sales.Customers
+WHERE Country = 'USA'
+END 
+
+EXEC GERMANCUSTOMER_SUMMARY
+
+ALTER PROCEDURE USCUSTOMER_SUMMARY @Country NVARCHAR(50) AS 
+BEGIN
+SELECT
+    COUNT(*) AS TotalCustomers,
+    AVG(Score) AS AVG_SCORE
+FROM Sales.Customers
+WHERE Country = @Country 
+END 
+
+EXEC USCUSTOMER_SUMMARY @Country = 'Germany' 
+
+EXEC USCUSTOMER_SUMMARY @Country = 'USA' 
+
+DROP PROCEDURE GERMANCUSTOMER_SUMMARY 
+
+ALTER PROCEDURE USCUSTOMER_SUMMARY @Country NVARCHAR(50) = 'USA' AS 
+BEGIN
+SELECT
+    COUNT(*) AS TotalCustomers,
+    AVG(Score) AS AVG_SCORE
+FROM Sales.Customers
+WHERE Country = @Country 
+END 
+
+EXEC USCUSTOMER_SUMMARY
+
+EXEC USCUSTOMER_SUMMARY @Country = 'Germany'  

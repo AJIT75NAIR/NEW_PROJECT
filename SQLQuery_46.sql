@@ -1,0 +1,42 @@
+--TASK: SHOW THE EMPLOYEE HIERARCHY BY DISPLAYING EACH EMPLOYEE'S LEVEL WITHIN
+--THE ORGANIZATION
+
+/*
+
+SELECT
+* FROM Sales.Employees
+
+*/
+
+WITH CTE_EMP_HIERARCHY AS 
+
+(
+--ANCHOR QUERY
+
+SELECT
+    EmployeeID,
+    FirstName,
+    ManagerID,
+    1 AS LEVEL
+FROM Sales.Employees 
+WHERE ManagerID IS NULL 
+UNION ALL 
+
+--RECURSIVE QUERY
+
+SELECT
+    E.EmployeeID,
+    E.FirstName,
+    E.ManagerID,
+    LEVEL + 1
+    FROM Sales.Employees AS E
+    INNER JOIN CTE_EMP_HIERARCHY AS CEH  
+    ON E.ManagerID = CEH.EmployeeID 
+
+
+)
+
+--MAIN QUERY
+
+SELECT * FROM CTE_EMP_HIERARCHY
+

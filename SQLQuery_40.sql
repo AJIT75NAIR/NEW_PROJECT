@@ -1,0 +1,264 @@
+--FIND THE TOTAL SALES ACROSS ALL ORDERS
+
+USE SalesDB
+
+SELECT
+Sales
+FROM Sales.Orders
+
+SELECT
+SUM(Sales) TotalSales
+FROM Sales.Orders
+
+--FIND THE TOTAL SALES FOR EACH PRODUCT
+
+SELECT
+    ProductID,
+    SUM(Sales) AS TotalSales
+FROM Sales.Orders
+GROUP BY ProductID
+
+--FIND THE TOTAL SALES FOR EACH PRODUCT, ADDITIONALLY PROVIDE DETAILS SUCH AS
+--ORDER ID AND ORDER DATE
+
+SELECT
+    OrderID,
+    OrderDate,
+    ProductID,
+    SUM(Sales) AS TotalSales
+FROM Sales.Orders
+GROUP BY OrderID,
+    OrderDate,
+    ProductID
+
+    SELECT
+    SUM(Sales) OVER()
+FROM Sales.Orders
+
+SELECT
+    OrderID,
+    OrderDate,
+    ProductID,
+    SUM(Sales) OVER(PARTITION BY ProductID) AS TotalSalesByProduct
+FROM Sales.Orders
+
+--FIND THE TOTAL SALES ACROSS ALL ORDERS, ADDITIONALLY PROVIDE DETAILS SUCH AS 
+--ORDER ID & ORDER DATE
+
+SELECT
+OrderID,
+OrderDate,
+SUM(Sales) OVER() AS TotalSales
+FROM Sales.Orders
+
+--FIND THE TOTAL SALES FOR EACH PRODUCT, ADDITIONALLY PROVIDE DETAILS SUCH AS
+--ORDER ID & ORDER DATE
+
+SELECT
+    OrderID,
+    OrderDate,
+    ProductID,
+    Sales,
+    SUM(Sales) OVER() AS TotalSales,
+    SUM(Sales) OVER(PARTITION BY ProductID) AS TotalSales_Product
+    FROM Sales.Orders
+
+    --FIND THE TOTAL SALES FOR EACH COMBINATION OF PRODUCT & ORDER STATUS
+
+    SELECT
+    OrderID,
+    ProductID,
+    Sales,
+    OrderStatus,
+    SUM(Sales) OVER() AS TotalSales,
+    SUM(Sales) OVER(PARTITION BY ProductID) AS TotalSales_Product,
+    SUM(Sales) OVER(PARTITION BY ProductID, OrderStatus) AS TotalSales_Products_OrderStatus 
+    FROM Sales.Orders
+
+--RANK EACH ORDER BASED ON THEIR SALES FROM HIGHEST TO LOWEST, ADDITIONALLY
+--PROVIDE DETAILS SUCH AS ORDER ID & ORDER DATE
+
+SELECT
+OrderID,
+OrderDate,
+Sales,
+RANK() OVER(ORDER BY Sales ASC) AS Ranking 
+FROM Sales.Orders
+
+SELECT
+OrderID,
+OrderDate,
+OrderStatus,
+Sales,
+SUM(Sales) OVER(PARTITION BY OrderStatus ORDER BY OrderDate
+ROWS BETWEEN CURRENT ROW AND 2 FOLLOWING) AS TotalSales  
+FROM Sales.Orders
+
+SELECT
+OrderID,
+OrderDate,
+OrderStatus,
+Sales,
+SUM(Sales) OVER(PARTITION BY OrderStatus ORDER BY OrderDate
+ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS TotalSales  
+FROM Sales.Orders
+
+SELECT
+OrderID,
+OrderDate,
+OrderStatus,
+Sales,
+SUM(Sales) OVER(PARTITION BY OrderStatus) AS TotalSales   
+FROM Sales.Orders
+ORDER BY SUM(Sales) OVER(PARTITION BY OrderStatus) DESC
+
+--FIND THE TOTAL SALES FOR EACH ORDER STATUS, ONLY FOR TWO PRODUCTS 101 AND 102
+
+SELECT
+    OrderID,
+    OrderDate,
+    OrderStatus,
+    ProductID,
+    Sales,
+    SUM(Sales) OVER(PARTITION BY OrderStatus) as TotalSales
+    FROM Sales.Orders
+    WHERE ProductID IN (101, 102)
+
+--RANK CUSTOMERS BASED ON THEIR TOTAL SALES
+
+SELECT
+CustomerID,
+SUM(Sales) AS TotalSales,
+RANK() OVER(ORDER BY SUM(Sales) DESC) AS RANK_CUSTOMER
+FROM Sales.Orders
+GROUP BY CustomerID
+
+--FIND THE TOTAL NUMBER OF ORDERS
+--ADDITIONALLY PROVIDE DETAILS SUCH AS ORDER ID, ORDER DATE
+
+SELECT
+*
+FROM Sales.Orders
+
+SELECT
+COUNT(*) AS TotalOrders
+FROM Sales.Orders
+
+SELECT
+    OrderID,
+    OrderDate, 
+    COUNT(*) OVER() AS TotalOrders
+FROM Sales.Orders
+
+--FIND THE TOTAL NUMBER OF ORDERS FOR EACH CUSTOMER
+
+
+SELECT
+    OrderID,
+    OrderDate, 
+    CustomerID,
+    COUNT(*) OVER() AS TotalOrders,
+    COUNT(*) OVER (PARTITION BY CustomerID) AS TotalOrders_Customer
+FROM Sales.Orders
+
+--FIND THE TOTAL NUMBER OF CUSTOMERS, ADDITIONALLY PROVIDE ALL CUSTOMER DETAILS
+
+SELECT
+*,
+COUNT(*) OVER() AS TotalCustomers
+FROM Sales.Customers
+
+--FIND THE TOTAL NUMBER OF SCORES FOR THE CUSTOMERS
+
+SELECT
+*,
+COUNT(*) OVER() AS TotalCustomers_Star,
+COUNT(1) OVER() AS TotalCustomers1,
+COUNT(Score) OVER() AS TotalScores,
+COUNT(Country) OVER() AS TotalCountries
+FROM Sales.Customers
+
+--CHECK WHETHER THE TABLE 'ORDERS' CONTAINS ANY DUPLICATE ROWS
+
+SELECT
+    OrderID,
+    COUNT(*) OVER(PARTITION BY OrderID) AS CheckPK
+FROM Sales.Orders
+
+SELECT
+*
+FROM Sales.OrdersArchive
+
+SELECT
+    OrderID,
+    COUNT(*) OVER(PARTITION BY OrderID) AS CheckPK
+FROM Sales.OrdersArchive
+
+SELECT
+*
+FROM (
+SELECT
+    OrderID,
+    COUNT(*) OVER(PARTITION BY OrderID) AS CheckPK
+FROM Sales.OrdersArchive
+)t WHERE CheckPK > 1
+
+--FIND THE TOTAL SALES ACROSS ALL ORDERS AND THE TOTAL SALES FOR EACH PRODUCT
+--ADDITIONALLY PROVIDE DETAILS SUCH AS ORDER ID AND ORDER DATE
+
+SELECT
+OrderID,
+OrderDate,
+Sales,
+ProductID,
+SUM(Sales) OVER() AS TotalSales,
+SUM(Sales) OVER(PARTITION BY ProductID) AS TotalSales_Product
+FROM Sales.Orders
+
+--FIND THE PERCENTAGE CONTRIBUTION OF EACH PRODUCT'S SALES TO THE TOTAL SALES
+
+SELECT
+OrderID,
+ProductID,
+Sales,
+SUM(Sales) OVER(PARTITION BY ProductID) AS TotalSales_Product,
+SUM(Sales) OVER() AS Total_Sales,
+ROUND(CAST (Sales AS Float) / SUM(Sales) OVER() * 100, 2) AS PercentageOfTotal
+FROM Sales.Orders
+
+--FIND THE AVERAGE SALES ACROSS ALL ORDERS
+--AND FIND THE AVERAGE SALES FOR EACH PRODUCT
+--ADDITIONALLY PROVIDE DETAILS SUCH AS ORDER ID, ORDER DATE
+
+SELECT
+OrderID,
+OrderDate,
+Sales,
+ProductID,
+AVG(Sales) OVER() AS AVG_SALES,
+AVG(Sales) OVER(PARTITION BY ProductID) AS AvgSales_Product
+FROM Sales.Orders
+
+--FIND THE AVERAGE SCORES OF CUSTOMERS. ADDITIONALLY, PROVIDE DETAILS SUCH AS 
+--CUSTOMER ID AND LAST NAME
+
+SELECT
+    CustomerID,
+    LastName,
+    COALESCE(Score,0),
+    AVG(Score) OVER() AS AVGSCORES,
+AVG(COALESCE(Score,0)) OVER() AVG_SCORESWONULL
+FROM Sales.Customers
+
+--FIND ALL ORDERS WHERE SALES ARE HIGHER THAN THE AVERAGE SALES ACROSS ALL ORDERS
+
+SELECT
+*
+FROM(
+SELECT
+    OrderID,
+    ProductID,
+    Sales,
+    AVG(Sales) OVER() AS AVG_SALES
+FROM Sales.Orders
+)t WHERE Sales > AVG_SALES

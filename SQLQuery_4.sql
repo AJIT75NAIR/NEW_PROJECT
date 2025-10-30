@@ -1,0 +1,3 @@
+--RETRIVE ALL ORDER DATA--
+SELECT *
+FROM orders

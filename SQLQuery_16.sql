@@ -1,0 +1,13 @@
+/* ADD A NEW COLUMN TO THE PERSONS TABLE */
+
+ALTER TABLE persons
+ADD email VARCHAR(50) NOT NULL 
+
+SELECT *
+FROM persons 
+
+ALTER TABLE persons
+DROP COLUMN phone 
+
+SELECT *
+FROM persons 

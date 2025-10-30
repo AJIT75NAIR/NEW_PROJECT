@@ -1,0 +1,60 @@
+--VIEW
+
+CREATE VIEW MONTHLY_SUMMARY AS
+
+(
+
+    SELECT
+    DATETRUNC(MONTH,OrderDate) AS ORDER_MONTH,
+    SUM(Sales) AS TotalSales,
+    COUNT(OrderID) AS TotalOrders,
+    SUM(Quantity) AS TotalQuantity
+    FROM Sales.Orders
+    GROUP BY DATETRUNC(MONTH,OrderDate)
+
+)
+
+SELECT 
+*
+FROM MONTHLY_SUMMARY
+
+SELECT
+ORDER_MONTH,
+TotalSales,
+SUM(TotalSales) OVER(ORDER BY ORDER_MONTH)AS RUNNING_TOTAL,
+TotalOrders,
+TotalQuantity 
+FROM MONTHLY_SUMMARY 
+
+CREATE VIEW Sales.MONTHLY_SUMMARY AS
+
+(
+
+    SELECT
+    DATETRUNC(MONTH,OrderDate) AS ORDER_MONTH,
+    SUM(Sales) AS TotalSales,
+    COUNT(OrderID) AS TotalOrders,
+    SUM(Quantity) AS TotalQuantity
+    FROM Sales.Orders
+    GROUP BY DATETRUNC(MONTH,OrderDate)
+
+)
+USE SalesDB
+
+DROP VIEW MONTHLY_SUMMARY
+
+IF OBJECT_ID ('Sales.MONTHLY_SUMMARY', 'V') IS NOT NULL 
+DROP VIEW Sales.MONTHLY_SUMMARY;
+GO 
+CREATE VIEW Sales.MONTHLY_SUMMARY AS
+
+(
+
+    SELECT
+    DATETRUNC(MONTH,OrderDate) AS ORDER_MONTH,
+    SUM(Sales) AS TotalSales,
+    COUNT(OrderID) AS TotalOrders
+    FROM Sales.Orders
+    GROUP BY DATETRUNC(MONTH,OrderDate)
+
+)

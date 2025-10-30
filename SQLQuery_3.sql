@@ -1,0 +1,9 @@
+USE MyDatabase
+--COMMENT--
+/* COMMENT 1
+COMMENT 2
+COMMENT 3
+COMMENT 4
+*/
+SELECT *
+FROM customers

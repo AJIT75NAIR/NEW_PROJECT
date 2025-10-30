@@ -1,0 +1,140 @@
+/* CREATE REPORT SHOWING TOTAL SALES FOR EACH OF THE FOLLOWING CATEGORIES: 
+HIGH (SALES OVER 50), MEDIUM (SALES 21 - 50), AND LOW (SALES 20 OR LESS). SORT 
+THE CATEGORIES FROM HIGHEST SALES TO LOWEST */
+
+SELECT
+Category,
+SUM(Sales) AS TotalSales
+FROM (
+SELECT 
+OrderId,
+Sales,
+CASE 
+    WHEN Sales > 50 THEN 'High'
+    WHEN Sales > 20 THEN 'Medium'
+    ELSE 'Low'
+END Category
+FROM Sales.Orders
+)t 
+GROUP BY Category
+ORDER BY TotalSales DESC
+
+--RETRIEVE EMPLOYEE DETAILS WITH GENDER DISPLAYED AS FULL TEXT
+
+SELECT
+EmployeeId,
+FirstName,
+LastName,
+Gender,
+CASE 
+    WHEN Gender = 'M' THEN 'MALE'
+    WHEN Gender = 'F' THEN 'FEMALE'
+    ELSE 'NOT AVAILABLE'
+    END GENDERFULLTEXT 
+FROM Sales.Employees
+
+--RETRIEVE CUSTOMERS DETAILS WITH ABBREVIATED COUNTRY CODE
+
+SELECT
+    CustomerId,
+    FirstName,
+    LastName,
+    Country,
+    CASE 
+        WHEN Country = 'Germany' THEN 'DE'
+        WHEN Country = 'USA' THEN 'US'
+        ELSE 'N/A'
+        END CountryAbbr,   
+
+        CASE Country
+        WHEN 'Germany' THEN 'DE'
+        WHEN 'USA' THEN 'US'
+        ELSE 'N/A'
+        END CountryAbbr2  
+FROM Sales.Customers
+
+SELECT DISTINCT Country  
+FROM sales.Customers
+
+--FIND THE AVERAGE SCORES OF CUSTOMERS AND TREAT NULLS AS ZERO
+--ADDITIONALLY PROVIDE DETAILS SUCH AS CUSTOMERID AND LASTNAME
+
+SELECT
+CustomerID,
+LastName,
+Score,
+CASE 
+    WHEN Score IS NULL THEN '0'
+    ELSE Score 
+END ScoreClean,
+
+AVG(CASE 
+    WHEN Score IS NULL THEN '0'
+    ELSE Score 
+END) OVER() AVGCUSTOMERCLEAN, 
+    AVG(Score) OVER () AVGCUSTOMER
+FROM Sales.Customers
+
+--COUNT HOW MANY TIMES EACH CUSTOMER HAS MADE AN ORDER WITH SALES GREATER THAN 30
+
+SELECT
+CustomerID,
+SUM(CASE 
+    WHEN Sales > 30 THEN 1
+    ELSE 0
+    END) TotalOrdersHighSales,
+    COUNT(*) TotalOrders 
+FROM Sales.Orders
+GROUP BY CustomerID 
+
+--FIND THE TOTAL NUMBER OF ORDERS
+
+SELECT 
+COUNT(*) AS Total_Nr_Orders
+FROM Sales.Orders   
+
+
+
+--FIND THE TOTAL SALES OF ALL ORDERS
+
+SELECT COUNT(*) AS Total_Nr_Orders,
+SUM(Sales) AS Total_Sales
+FROM Sales.Orders 
+
+--FIND THE AVERAGE SALES OF ALL ORDERS
+
+SELECT COUNT(*) AS Total_Nr_Orders,
+SUM(Sales) AS Total_Sales,
+AVG(Sales) AS AVG_SALES
+FROM Sales.Orders 
+
+--FIND THE HIGHEST SALES OF ALL ORDERS
+
+SELECT COUNT(*) AS Total_Nr_Orders,
+SUM(Sales) AS Total_Sales,
+AVG(Sales) AS AVG_SALES,
+MAX(Sales) AS HIGHEST_SALE
+FROM Sales.Orders 
+
+SELECT *
+FROM Sales.Orders
+
+--FIND THE LOWEST SALES OF ALL ORDERS
+
+SELECT COUNT(*) AS Total_Nr_Orders,
+SUM(Sales) AS Total_Sales,
+AVG(Sales) AS AVG_SALES,
+MAX(Sales) AS HIGHEST_SALE,
+MIN(Sales) AS LOWEST_SALE
+FROM Sales.Orders 
+
+SELECT
+CustomerID,
+COUNT(*) AS Total_Nr_Orders,
+SUM(Sales) AS Total_Sales,
+AVG(Sales) AS AVG_SALES,
+MAX(Sales) AS HIGHEST_SALE,
+MIN(Sales) AS LOWEST_SALE
+FROM Sales.Orders
+GROUP BY CustomerID 
+
